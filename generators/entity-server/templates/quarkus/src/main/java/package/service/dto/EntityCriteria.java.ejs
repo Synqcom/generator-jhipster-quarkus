@@ -2,6 +2,7 @@ package <%= packageName %>.service.dto;
 
 import java.io.Serializable;
 import java.util.Objects;
+import java.util.List;
 import <%= packageName %>.service.filtering.Criteria;
 <%_ for (idx in fields) { if (fields[idx].fieldIsEnum === true) { _%>
 import <%= packageName %>.domain.enumeration.<%= fields[idx].fieldType %>;
@@ -109,9 +110,11 @@ public class <%= entityClass %>Criteria implements Serializable, Criteria<%_ if 
 
     private static final long serialVersionUID = 1L;
 <%_ filterVariables.forEach((filterVariable) => { _%>
-
     private <%- filterVariable.filterType %> <%= filterVariable.name %>;
 <%_ }); _%>
+
+    private List<<%= entityClass %>Criteria> and;
+    private List<<%= entityClass %>Criteria> or;
 
     public <%= entityClass %>Criteria() {
     }
@@ -120,6 +123,8 @@ public class <%= entityClass %>Criteria implements Serializable, Criteria<%_ if 
 <%_ filterVariables.forEach((filterVariable) => { _%>
         this.<%= filterVariable.name %> = other.<%= filterVariable.name %> == null ? null : other.<%= filterVariable.name %>.copy();
 <%_ }); _%>
+        this.and = other.and == null ? null : List.copyOf(other.and);
+        this.or = other.or == null ? null : List.copyOf(other.or);
     }
 
     @Override
@@ -137,6 +142,20 @@ public class <%= entityClass %>Criteria implements Serializable, Criteria<%_ if 
     }
 
 <%_ }); _%>
+    public List<<%= entityClass %>Criteria> getAnd() {
+        return and;
+    }
+    public void setAnd(List<<%= entityClass %>Criteria> and) {
+        this.and = and;
+    }
+
+    public List<<%= entityClass %>Criteria> getOr() {
+        return or;
+    }
+
+    public void setOr(List<<%= entityClass %>Criteria> or) {
+        this.or = or;
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -149,25 +168,18 @@ public class <%= entityClass %>Criteria implements Serializable, Criteria<%_ if 
         final <%= entityClass %>Criteria that = (<%= entityClass %>Criteria) o;
         return
 <%_ filterVariables.forEach((filterVariable, index) => { _%>
-    <%_ if (filterVariables.length === index + 1) { _%>
-            Objects.equals(<%= filterVariable.name %>, that.<%= filterVariable.name %>);
-    <%_ } else { _%>
-            Objects.equals(<%= filterVariable.name %>, that.<%= filterVariable.name %>) &&
-    <%_ } _%>
+        Objects.equals(<%= filterVariable.name %>, that.<%= filterVariable.name %>) &&
 <%_ }); _%>
+        Objects.equals(and, that.and) && Objects.equals(or, that.or);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(
 <%_ filterVariables.forEach((filterVariable, index) => { _%>
-    <%_ if (filterVariables.length === (index + 1)) { _%>
-        <%= filterVariable.name %>
-    <%_ } else { _%>
-        <%= filterVariable.name %>,
-    <%_ } _%>
+    <%= filterVariable.name %>,
 <%_ }); _%>
-        );
+        and, or);
     }
 
     // prettier-ignore
@@ -177,6 +189,8 @@ public class <%= entityClass %>Criteria implements Serializable, Criteria<%_ if 
 <%_ filterVariables.forEach((field) => { _%>
                 (<%= field.name %> != null ? "<%= field.name %>=" + <%= field.name %> + ", " : "") +
 <%_ }); _%>
+                (and != null ? "and=" + and.toString() + ", " : "") +
+                (or != null ? "or=" + or.toString() + ", " : "") +
             "}";
     }
 
