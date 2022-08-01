@@ -46,6 +46,7 @@ public class <%= entityClass %>QueryService<% if (hasServiceImpl) { %>Impl<% } %
 
 <%- include('../../_partials/imperative/service/find_all_filtered', this); -%>
 <%- include('../../_partials/imperative/service/count_filtered', this); -%>
+<%- include('../../_partials/imperative/service/delete_filtered', this); -%>
 
 
     protected CriteriaQuery<<%= entityClass %>> createSelectCriteriaQuery(<%= entityClass %>Criteria criteria, Sort sort) {
@@ -60,6 +61,13 @@ public class <%= entityClass %>QueryService<% if (hasServiceImpl) { %>Impl<% } %
         Root<<%= entityClass %>> from = query.from(<%= entityClass %>.class);
 
         return query.select(entityManager.getCriteriaBuilder().count(from)).where(createPredicate(criteria, from));
+    }
+
+    protected CriteriaDelete<<%= entityClass %>> createDeleteCriteriaQuery(<%= entityClass %>Criteria criteria) {
+        CriteriaDelete<<%= entityClass %>> criteriaDelete = entityManager.getCriteriaBuilder().createCriteriaDelete(<%= entityClass %>.class);
+        Root<<%= entityClass %>> from = criteriaDelete.from(<%= entityClass %>.class);
+
+        return criteriaDelete.where(createPredicate(criteria, from));
     }
 
     protected Predicate createPredicate(<%= entityClass %>Criteria criteria, Root<<%= entityClass %>> from) {
