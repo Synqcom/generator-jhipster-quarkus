@@ -450,6 +450,10 @@ const serverFiles = {
                     renameTo: generator => `${generator.javaDir}web/rest/errors/ConstraintViolationExceptionMapper.java`,
                 },
                 {
+                    file: 'package/web/rest/errors/HibernateConstraintViolationExceptionMapper.java',
+                    renameTo: generator => `${generator.javaDir}web/rest/errors/HibernateConstraintViolationExceptionMapper.java`,
+                },
+                {
                     file: 'package/web/rest/errors/FieldErrorVM.java',
                     renameTo: generator => `${generator.javaDir}web/rest/errors/FieldErrorVM.java`,
                 },
