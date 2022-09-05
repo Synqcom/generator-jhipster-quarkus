@@ -42,7 +42,7 @@
             <%_
             for (let idx = 0; idx < relationships.length; idx++) {
                 let relationship = relationships[idx]
-                let fieldName = relationship.relationshipType.endsWith('to-many') ? relationship.relationshipFieldNamePlural : relationship.relationshipFieldName;
+                let fieldName = relationship.relationshipFieldName;
             _%>
             entity.<%= fieldName %> = <%= entityInstance %>.<%= fieldName %>;
             <%_ } _%>

@@ -34,12 +34,12 @@ if (fieldsContainOwnerManyToMany === true) {
 _%>
     <%= finderPrefix %> PanacheQuery<<%= entityClass %>> findAllWithEagerRelationships() {
         return find("select distinct <%= entityInstance %> from <%= entityClass %> <%= entityInstance %><% for (idx in relationships) {
-            if (relationships[idx].relationshipType === 'many-to-many' && relationships[idx].ownerSide === true) { %> left join fetch <%= entityInstance %>.<%= relationships[idx].relationshipFieldNamePlural %><% } } %>");
+            if (relationships[idx].relationshipType === 'many-to-many' && relationships[idx].ownerSide === true) { %> left join fetch <%= entityInstance %>.<%= relationships[idx].relationshipFieldName %><% } } %>");
     }
 
     <%= finderPrefix %> Optional<<%= entityClass %>> findOneWithEagerRelationships(<%= primaryKeyType %> id) {
         return find("select <%= entityInstance %> from <%= entityClass %> <%= entityInstance %><% for (idx in relationships) {
-            if (relationships[idx].relationshipType === 'many-to-many' && relationships[idx].ownerSide === true) { %> left join fetch <%= entityInstance %>.<%= relationships[idx].relationshipFieldNamePlural %><% } } %> where <%= entityInstance %>.id =?1", id).firstResultOptional();
+            if (relationships[idx].relationshipType === 'many-to-many' && relationships[idx].ownerSide === true) { %> left join fetch <%= entityInstance %>.<%= relationships[idx].relationshipFieldName %><% } } %> where <%= entityInstance %>.id =?1", id).firstResultOptional();
     }
 <%_
     } else if (databaseType === 'mongodb' || databaseType === 'couchbase')  {

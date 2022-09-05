@@ -87,7 +87,7 @@ public class <%= entityClass %>QueryService<% if (hasServiceImpl) { %>Impl<% } %
             });
 
             relationships.forEach((relationship) => {
-                const metamodelFieldName = (relationship.relationshipType === 'many-to-many' || relationship.relationshipType === 'one-to-many') ? relationship.relationshipFieldNamePlural : relationship.relationshipFieldName; _%>
+                const metamodelFieldName = relationship.relationshipFieldName; _%>
             if (criteria.get<%= relationship.relationshipNameCapitalized %>Id() != null) {
                 predicateList.add(buildCriteria(criteria.get<%= relationship.relationshipNameCapitalized %>Id(),
                     from.join(<%= entityClass %>_.<%= metamodelFieldName %>, JoinType.LEFT).get(<%= relationship.otherEntityNameCapitalized %>_.id)));

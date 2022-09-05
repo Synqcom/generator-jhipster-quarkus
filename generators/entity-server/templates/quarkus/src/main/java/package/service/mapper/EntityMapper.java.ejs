@@ -130,9 +130,9 @@ for (idx in relationships) {
 _%>
     @Mapping(source = "<%= relationshipName %>Id", target = "<%= relationshipName %>")
             <%_ } else if (relationshipType === 'many-to-many' && ownerSide === false) { renMapAnotDto = true; _%>
-    @Mapping(target = "<%= relationshipNamePlural %>", ignore = true)
+    @Mapping(target = "<%= relationshipName %>", ignore = true)
             <%_ } else if (relationshipType === 'one-to-many') { renMapAnotDto = true; _%>
-    @Mapping(target = "<%= relationshipNamePlural %>", ignore = true)
+    @Mapping(target = "<%= relationshipName %>", ignore = true)
             <%_ } else if (relationshipType === 'one-to-one' && ownerSide === false) { renMapAnotDto = true; _%>
     @Mapping(target = "<%= relationshipName %>", ignore = true)
             <%_ }

@@ -306,7 +306,7 @@ public class <%= asEntity(entityClass) %> extends <% if (databaseType === 'sql')
     @N1qlJoin(on = "lks.<%= relationshipFieldName %>=meta(rks).id", fetchType = FetchType.IMMEDIATE)
         <%_ } _%>
     <%_ } _%>
-    public Set<<%= asEntity(otherEntityNameCapitalized) %>> <%= relationshipFieldNamePlural %> = new HashSet<>();
+    public Set<<%= asEntity(otherEntityNameCapitalized) %>> <%= relationshipFieldName %> = new HashSet<>();
 
     <%_ } else if (relationshipType === 'many-to-one') {
             if (databaseType === 'sql') {
@@ -336,7 +336,7 @@ public class <%= asEntity(entityClass) %> extends <% if (databaseType === 'sql')
 
     <%_ } else if (relationshipType === 'many-to-many') {
         if (databaseType === 'sql') { _%>
-    @ManyToMany<% if (ownerSide === false) { %>(mappedBy = "<%= otherEntityRelationshipNamePlural %>")<% } %>
+    @ManyToMany<% if (ownerSide === false) { %>(mappedBy = "<%= otherEntityRelationshipName %>")<% } %>
             <%_ if (enableHibernateCache) { _%>
     @Cache(usage = CacheConcurrencyStrategy.<% if (readOnly) { %>READ_ONLY<% } else { %>READ_WRITE<% } %>)
             <%_ } _%>
@@ -355,17 +355,17 @@ public class <%= asEntity(entityClass) %> extends <% if (databaseType === 'sql')
             if (databaseType === 'mongodb') { _%>
     @DBRef
         <%_ } _%>
-    @Field("<%= relationshipFieldNamePlural %>")
+    @Field("<%= relationshipFieldName %>")
         <%_ if (databaseType === 'couchbase') { _%>
     @JsonbTransient
     public Set<String> <%= relationshipFieldName %>Ids = new HashSet<>();
 
-    @N1qlJoin(on = "lks.<%= relationshipFieldNamePlural %>=meta(rks).id", fetchType = FetchType.IMMEDIATE)
+    @N1qlJoin(on = "lks.<%= relationshipFieldName %>=meta(rks).id", fetchType = FetchType.IMMEDIATE)
         <%_ }
          } if (ownerSide === false) { _%>
     <%_ } _%>
     @JsonbTransient
-    public Set<<%= asEntity(otherEntityNameCapitalized) %>> <%= relationshipFieldNamePlural %> = new HashSet<>();
+    public Set<<%= asEntity(otherEntityNameCapitalized) %>> <%= relationshipFieldName %> = new HashSet<>();
 
     <%_ } else {
         if (databaseType === 'sql') {

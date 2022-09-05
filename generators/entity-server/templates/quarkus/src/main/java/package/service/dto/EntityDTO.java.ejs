@@ -152,7 +152,7 @@ public class <%= asDto(entityClass) %> implements Serializable, BaseDTO {
     @ApiModelProperty(value = "<%- formatAsApiDescription(relationships[idx].javadoc) %>")
         <%_ } _%>
         <%_ if ((relationshipType === 'many-to-many' && ownerSide === true) || (relationshipType === 'one-to-many' && otherEntityIsEmbedded)) { _%>
-    public Set<<%= asDto(otherEntityNameCapitalized) %>> <%= relationshipFieldNamePlural %> = new HashSet<>();
+    public Set<<%= asDto(otherEntityNameCapitalized) %>> <%= relationshipFieldName %> = new HashSet<>();
         <%_ } else if (relationshipType === 'one-to-one' && ownerSide === true && otherEntityIsEmbedded) { _%>
     public <%= asDto(otherEntityNameCapitalized) %> <%= relationshipFieldName %>;
         <%_ } else if (relationshipType === 'many-to-one' || (relationshipType === 'one-to-one' && ownerSide === true)) { _%>
@@ -213,7 +213,7 @@ public class <%= asDto(entityClass) %> implements Serializable, BaseDTO {
                 const ownerSide = relationships[idx].ownerSide; _%>
                 <%_ if ((relationshipType === 'many-to-many' && ownerSide === true)
                         || (relationshipType === 'one-to-many' && otherEntityIsEmbedded)) { _%>
-            ", <%= relationshipFieldNamePlural %>='" + <%= relationshipFieldNamePlural %> + "'" +
+            ", <%= relationshipFieldName %>='" + <%= relationshipFieldName %> + "'" +
                 <%_ } else if (relationshipType === 'one-to-one' && ownerSide === true && otherEntityIsEmbedded) { _%>
             ", <%= relationshipFieldName %>='" + <%= relationshipFieldName %> + "'" +
                 <%_ } else if (relationshipType === 'many-to-one' || (relationshipType === 'one-to-one' && ownerSide === true)) { _%>
