@@ -98,13 +98,14 @@ public class <%= entityClass %>QueryService<% if (hasServiceImpl) { %>Impl<% } %
             Predicate predicate = criteriaBuilder.and(predicateList.toArray(new Predicate[0]));
 
             if (criteria.getAnd() != null && !criteria.getAnd().isEmpty()) {
-                predicate = criteriaBuilder.and(predicate, criteriaBuilder.and(
-                    criteria.getAnd().stream().map(c -> createPredicate(c, from)).toArray(Predicate[]::new)));
+                Predicate predicateAnd = criteriaBuilder.and(criteria.getAnd().stream().map(c -> createPredicate(c, from)).toArray(Predicate[]::new));
+                predicate = predicateList.isEmpty() ? predicateAnd : criteriaBuilder.and(predicate, predicateAnd);
             }
 
             if (criteria.getOr() != null && !criteria.getOr().isEmpty()) {
-                predicate = criteriaBuilder.or(predicate, criteriaBuilder.or(
-                    criteria.getOr().stream().map(c -> createPredicate(c, from)).toArray(Predicate[]::new)));
+                Predicate predicateOr = criteriaBuilder.or(criteria.getOr().stream().map(c -> createPredicate(c, from)).toArray(Predicate[]::new));
+                predicate = predicateList.isEmpty() && (criteria.getAnd() == null || criteria.getAnd().isEmpty()) ?
+                    predicateOr : criteriaBuilder.or(predicate, predicateOr);
             }
             return predicate;
         }
