@@ -31,6 +31,10 @@ public class <%= serviceClassName %><% if (hasServiceImpl) { %> implements <%= e
 
 <%- include('../../_partials/imperative/service/save', this); -%>
 
+<%_ if (manualIdentifier) { _%>
+<%- include('../../_partials/imperative/service/create', this); -%>
+
+<%_ } _%>
 <%- include('../../_partials/imperative/service/delete', this); -%>
 
 <%- include('../../_partials/imperative/service/find', this); -%>

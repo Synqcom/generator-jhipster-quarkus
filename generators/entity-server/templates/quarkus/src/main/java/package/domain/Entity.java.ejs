@@ -177,11 +177,13 @@ public class <%= asEntity(entityClass) %> extends <% if (databaseType === 'sql')
 
 <%_ if (databaseType === 'sql') { _%>
     @Id
-    <%_ if (prodDatabaseType === 'mysql' || prodDatabaseType === 'mariadb') { _%>
+    <%_ if (!manualIdentifier) { _%>
+        <%_ if (prodDatabaseType === 'mysql' || prodDatabaseType === 'mariadb') { _%>
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    <%_ }  else { _%>
+        <%_ }  else { _%>
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
     @SequenceGenerator(name = "sequenceGenerator")
+        <%_ } _%>
     <%_ } _%>
 <%_ } _%>
 <%_ if (databaseType === 'couchbase') { _%>

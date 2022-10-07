@@ -48,6 +48,16 @@ public interface <%= entityClass %>Service extends BatchExecutionServiceInterfac
      */
     <%= entityOrDtoClass %> persistOrUpdate(<%= entityOrDtoClass %> <%= entityOrDtoInstance %>);
 
+<%_ if (manualIdentifier) { _%>
+    /**
+     * Create a <%= entityInstance %>.
+     *
+     * @param <%= entityOrDtoInstance %> the entity to create.
+     * @return the persisted entity.
+     */
+    <%= entityOrDtoClass %> persist(<%= entityOrDtoClass %> <%= entityOrDtoInstance %>);
+
+<%_ } _%>
     /**
      * Delete the "id" <%= entityOrDtoInstance %>.
      *

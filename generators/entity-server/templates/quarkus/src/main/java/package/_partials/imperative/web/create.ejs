@@ -28,13 +28,23 @@
     <%_ } _%>
     public Response create<%= entityClass %>(<% if (validation) { %>@Valid <% } %><%= entityOrDtoClass %> <%= entityOrDtoInstance %>, @Context UriInfo uriInfo) {
         log.debug("REST request to save <%= entityClass %> : {}", <%= entityOrDtoInstance %>);
+        <%_ if (!manualIdentifier) { _%>
         if (<%= entityOrDtoInstance %>.id != null) {
             throw new BadRequestAlertException("A new <%= entityInstance %> cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        <%_ } else { _%>
+        if (<%= entityOrDtoInstance %>.id == null) {
+            throw new BadRequestAlertException("A new <%= entityInstance %> must have an ID", ENTITY_NAME, "idnull");
+        }
+        <%_ } _%>
         <%_ if (databaseType === 'cassandra') { _%>
         <%= entityOrDtoInstance %>.id = UUID.randomUUID();
         <%_ } _%>
+        <%_ if (!manualIdentifier) { _%>
 <%- include('../common/save', {...this, returnDirectly: false, isController: true}); -%>
+        <%_ } else { _%>
+<%- include('../common/create', {...this, returnDirectly: false, isController: true}); -%>
+        <%_ } _%>
         <%_ if (databaseType === 'mongodb' && !viaService) { _%>
         <%= entityClass %> result = <%= entityClass %>.findById(<%= entityOrDtoInstance %>.id);
         <%_ } _%>
