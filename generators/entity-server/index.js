@@ -125,6 +125,7 @@ module.exports = class extends EntityServerGenerator {
                 entity.serviceClassName = entity.hasServiceImpl ? `${entity.entityClass}ServiceImpl` : `${entity.entityClass}Service`;
                 entity.serviceClassName = entity.hasServiceImpl ? `${entity.entityClass}ServiceImpl` : `${entity.entityClass}Service`;
                 entity.getCriteriaBuilder = getCriteriaBuilder;
+                entity.manualIdentifier = entity.identifierType !== undefined && entity.identifierType === 'manual';
             },
             ...super._default(),
         };
