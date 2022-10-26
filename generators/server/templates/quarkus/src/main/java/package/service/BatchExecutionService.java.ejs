@@ -2,6 +2,7 @@ package <%=packageName%>.service;
 
 import <%=packageName%>.provider.BatchExecutionServicesProvider;
 import <%=packageName%>.service.dto.*;
+import <%=packageName%>.service.filtering.Criteria;
 import <%=packageName%>.service.mapper.BatchExecutionMapper;
 import <%=packageName%>.service.mapper.PrimitiveListMapper;
 import <%=packageName%>.service.util.ClassUtil;
@@ -56,6 +57,9 @@ public class BatchExecutionService {
                 PrimitiveListRequestDTO primitiveListRequestDTO = jsonb.fromJson(request.data, PrimitiveListRequestDTO.class);
                 batchExecutionServiceExtension.deletePrimitiveList(primitiveListRequestDTO);
                 responseData = createPrimitiveList(primitiveListRequestDTO, request.objectName, batchExecutionServiceExtension);
+            } else if (ActionType.CRITERIA_DELETE.equals(request.actionType)) {
+                Criteria criteria = (Criteria) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.CRITERIA_CLASS_PATH, request.objectName + "Criteria"));
+                batchExecutionServiceExtension.deleteByCriteria(criteria);
             }
             BatchExecutionResponseDTO response = batchExecutionMapper.toBatchExecutionResponseDTO(request, responseData);
             responseDTOList.add(response);
