@@ -6,5 +6,6 @@ import io.quarkus.panache.common.Sort;
 public interface BatchExecutionQueryServiceInterface<T, V> {
 
     Paged<T> findAllByCriteria(V criteria, Page page, Sort sort);
-}
 
+    Integer deleteByCriteria(V criteria);
+}

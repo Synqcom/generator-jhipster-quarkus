@@ -2,12 +2,15 @@ package <%=packageName%>.service;
 
 import <%=packageName%>.provider.BatchExecutionServicesProvider;
 import <%=packageName%>.service.dto.*;
+import <%=packageName%>.service.filtering.Criteria;
 import <%=packageName%>.service.filtering.filter.StringFilter;
 import <%=packageName%>.service.mapper.EntityMapper;
 import <%=packageName%>.service.exception.BatchExecutionException;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 
+import java.util.Collections;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -62,6 +65,11 @@ public class BatchExecutionServiceExtension<T> implements BatchExecutionServiceI
         }
     }
 
+    public Map<String, Object> deleteByCriteria(Criteria criteria) {
+        BatchExecutionQueryServiceInterface queryService = servicesProvider.getQueryService(objectName);
+        return Collections.singletonMap("count", queryService.deleteByCriteria(criteria));
+    }
+
     public void deletePrimitiveList(PrimitiveListRequestDTO primitiveListRequestDTO) {
         BatchExecutionServiceExtension batchExecutionServiceExtension = servicesProvider.getServiceExtension(objectName);
         BatchExecutionQueryServiceInterface primitiveListQueryService = servicesProvider.getQueryService(objectName);
@@ -102,4 +110,3 @@ public class BatchExecutionServiceExtension<T> implements BatchExecutionServiceI
         serviceInterface.delete(id);
     }
 }
-
