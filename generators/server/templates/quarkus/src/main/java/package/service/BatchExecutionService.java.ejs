@@ -41,17 +41,13 @@ public class BatchExecutionService {
             BatchExecutionServiceExtension batchExecutionServiceExtension = servicesProvider.getServiceExtension(request.objectName);
             Object responseData = null;
             if (ActionType.CREATE.equals(request.actionType) || ActionType.UPDATE.equals(request.actionType)) {
-                BaseDTO data = createBaseDTO(request);
-                responseData = batchExecutionServiceExtension.persistOrUpdate(data);
+                responseData = batchExecutionServiceExtension.persistOrUpdate(createBaseDTO(request));
             } else if (ActionType.PARTIAL_UPDATE.equals(request.actionType)) {
-                BaseDTO data = createBaseDTO(request);
-                responseData = batchExecutionServiceExtension.partialUpdate(data);
+                responseData = batchExecutionServiceExtension.partialUpdate(createBaseDTO(request));
             } else if (ActionType.READ_OBJECT.equals(request.actionType)) {
-                BaseDTO data = createBaseDTO(request);
-                responseData = batchExecutionServiceExtension.findOne(data.getId()).orElse(null);
+                responseData = batchExecutionServiceExtension.findOne(createBaseDTO(request).getId()).orElse(null);
             } else if (ActionType.DELETE.equals(request.actionType)) {
-                BaseDTO data = createBaseDTO(request);
-                batchExecutionServiceExtension.delete(data.getId());
+                batchExecutionServiceExtension.delete(createBaseDTO(request).getId());
             } else if (ActionType.READ_ENUM.equals(request.actionType)) {
                 EnumDTO enumDTO = jsonb.fromJson(request.data, EnumDTO.class);
                 responseData = batchExecutionServiceExtension.readEnum(enumDTO);
