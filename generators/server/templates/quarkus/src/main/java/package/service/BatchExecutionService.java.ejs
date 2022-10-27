@@ -45,6 +45,8 @@ public class BatchExecutionService {
                 responseData = batchExecutionServiceExtension.persistOrUpdate(data);
             } else if (ActionType.PARTIAL_UPDATE.equals(request.actionType)) {
                 responseData = batchExecutionServiceExtension.partialUpdate(data);
+            } else if (ActionType.READ_OBJECT.equals(request.actionType)) {
+                responseData = batchExecutionServiceExtension.findOne(data.getId()).orElse(null);
             } else if (ActionType.DELETE.equals(request.actionType)) {
                 batchExecutionServiceExtension.delete(data.getId());
             } else if (ActionType.READ_ENUM.equals(request.actionType)) {
