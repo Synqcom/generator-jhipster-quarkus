@@ -39,15 +39,18 @@ public class BatchExecutionService {
         List<BatchExecutionResponseDTO> responseDTOList = new ArrayList<>();
         for (BatchExecutionRequestDTO request : batchExecutionRequests) {
             BatchExecutionServiceExtension batchExecutionServiceExtension = servicesProvider.getServiceExtension(request.objectName);
-            BaseDTO data = (BaseDTO) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.DTO_CLASS_PATH, request.objectName + "DTO"));
             Object responseData = null;
             if (ActionType.CREATE.equals(request.actionType) || ActionType.UPDATE.equals(request.actionType)) {
+                BaseDTO data = createBaseDTO(request);
                 responseData = batchExecutionServiceExtension.persistOrUpdate(data);
             } else if (ActionType.PARTIAL_UPDATE.equals(request.actionType)) {
+                BaseDTO data = createBaseDTO(request);
                 responseData = batchExecutionServiceExtension.partialUpdate(data);
             } else if (ActionType.READ_OBJECT.equals(request.actionType)) {
+                BaseDTO data = createBaseDTO(request);
                 responseData = batchExecutionServiceExtension.findOne(data.getId()).orElse(null);
             } else if (ActionType.DELETE.equals(request.actionType)) {
+                BaseDTO data = createBaseDTO(request);
                 batchExecutionServiceExtension.delete(data.getId());
             } else if (ActionType.READ_ENUM.equals(request.actionType)) {
                 EnumDTO enumDTO = jsonb.fromJson(request.data, EnumDTO.class);
@@ -70,6 +73,10 @@ public class BatchExecutionService {
             responseDTOList.add(response);
         }
         return responseDTOList;
+    }
+
+    private BaseDTO createBaseDTO(BatchExecutionRequestDTO request) {
+        return (BaseDTO) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.DTO_CLASS_PATH, request.objectName + "DTO"));
     }
 
     private List<Object> createPrimitiveList(PrimitiveListRequestDTO primitiveListRequestDTO, String objectName, BatchExecutionServiceExtension batchExecutionServiceExtension) {
