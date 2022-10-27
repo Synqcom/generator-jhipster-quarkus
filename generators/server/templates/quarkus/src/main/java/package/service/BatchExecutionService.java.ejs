@@ -59,6 +59,9 @@ public class BatchExecutionService {
                 PrimitiveListRequestDTO primitiveListRequestDTO = jsonb.fromJson(request.data, PrimitiveListRequestDTO.class);
                 batchExecutionServiceExtension.deletePrimitiveList(primitiveListRequestDTO);
                 responseData = createPrimitiveList(primitiveListRequestDTO, request.objectName, batchExecutionServiceExtension);
+            } else if (ActionType.CRITERIA_SEARCH.equals(request.actionType)) {
+                Criteria criteria = (Criteria) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.CRITERIA_CLASS_PATH, request.objectName + "Criteria"));
+                responseData = batchExecutionServiceExtension.searchByCriteria(criteria);
             } else if (ActionType.CRITERIA_DELETE.equals(request.actionType)) {
                 Criteria criteria = (Criteria) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.CRITERIA_CLASS_PATH, request.objectName + "Criteria"));
                 batchExecutionServiceExtension.deleteByCriteria(criteria);

@@ -29,9 +29,7 @@ import io.quarkus.panache.common.Page;
 <%_ } _%>
 import io.quarkus.panache.common.Sort;
 
-<%_ if (!hasPagination || fieldsContainNoOwnerOneToOne === true) { _%>
 import java.util.List;
-<%_ } _%>
 import java.util.Optional;
 <%_ if (databaseType === 'cassandra') { _%>
 import java.util.UUID;
@@ -42,14 +40,20 @@ import java.util.UUID;
  */
 public interface <%= entityClass %>QueryService extends BatchExecutionQueryServiceInterface<<%= entityOrDtoClass %>, <%= entityClass %>Criteria> {
 
+    <%_ if (hasPagination) { _%>
     /**
      * Get all the <%= entityInstancePlural %>.
-    <%_ if (hasPagination) { _%>
      * @param page the pagination information.
-    <%_ } _%>
      * @return the list of entities.
      */
-    <% if(hasPagination) { %>Paged<<%= entityOrDtoClass %>><% } else { %> List<<%= entityOrDtoClass %>><% } %> findAllByCriteria(<%= entityClass %>Criteria <%= entityInstance %>Criteria<% if(hasPagination) { %>, Page page<% } %>, Sort sort);
+    Paged<<%= entityOrDtoClass %>> findAllByCriteria(<%= entityClass %>Criteria <%= entityInstance %>Criteria, Page page, Sort sort);
+    <%_ } _%>
+
+    /**
+     * Get all the <%= entityInstancePlural %>.
+     * @return the list of entities.
+     */
+    List<<%= entityOrDtoClass %>> findAllByCriteria(<%= entityClass %>Criteria <%= entityInstance %>Criteria, Sort sort);
 
     /**
     * Count all the <%= entityInstancePlural %>.

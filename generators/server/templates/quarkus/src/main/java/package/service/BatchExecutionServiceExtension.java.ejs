@@ -9,10 +9,7 @@ import <%=packageName%>.service.exception.BatchExecutionException;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 
-import java.util.Collections;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
 
 /**
 * Декоратор, расширяющий возможности пакетного обновления объектов
@@ -63,6 +60,11 @@ public class BatchExecutionServiceExtension<T> implements BatchExecutionServiceI
         } catch (NoSuchElementException e) {
             throw new BatchExecutionException(String.format("Enum with name %s and code %s not found", objectName, enumDTO.code));
         }
+    }
+
+    public List<T> searchByCriteria(Criteria criteria) {
+        BatchExecutionQueryServiceInterface queryService = servicesProvider.getQueryService(objectName);
+        return queryService.findAllByCriteria(criteria, null);
     }
 
     public Map<String, Object> deleteByCriteria(Criteria criteria) {
