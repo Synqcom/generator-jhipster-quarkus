@@ -16,11 +16,10 @@
  See the License for the specific language governing permissions and
  limitations under the License.
 -%>
+    <%_ if (hasPagination) { _%>
     /**
      * Get all the <%= entityInstancePlural %>.
-    <%_ if (hasPagination) { _%>
      * @param page the pagination information.
-    <%_ } _%>
      * @return the list of entities.
      */
     <%_ if (hasServiceImpl) { _%>
@@ -29,18 +28,31 @@
     <%_ if (databaseType === 'sql' && isUsingMapsId === true) { _%>
     @Transactional(readOnly = true)
     <%_ } _%>
-    public <% if(hasPagination) { %>Paged<<%= entityOrDtoClass %>><% } else { %> List<<%= entityOrDtoClass %>><% } %> findAllByCriteria(<%= entityClass %>Criteria <%= entityInstance %>Criteria<% if(hasPagination) { %>, Page page<% } %>, Sort sort) {
+    public Paged<<%= entityOrDtoClass %>> findAllByCriteria(<%= entityClass %>Criteria <%= entityInstance %>Criteria, Page page, Sort sort) {
         log.debug("Request to get all <%= entityClassPlural %>");
         CriteriaQuery<<%= entityClass %>> criteriaQuery = createSelectCriteriaQuery(<%= entityInstance %>Criteria, sort);
-        <% if(hasPagination) { %>
         CriteriaQuery<Long> countQuery = createCountCriteriaQuery(<%= entityInstance %>Criteria);
         Long totalCount = entityManager.createQuery(countQuery).getSingleResult();
-        <% } %>
-        final TypedQuery<<%= entityClass %>> query = entityManager.createQuery(criteriaQuery)<% if(hasPagination) { %>.setFirstResult(page.index * page.size).setMaxResults(page.size)<% } %>;
+        final TypedQuery<<%= entityClass %>> query = entityManager.createQuery(criteriaQuery).setFirstResult(page.index * page.size).setMaxResults(page.size);
         List<<%= entityOrDtoClass %>> resultList = <% if (hasDto) { %><%= mapper %>.toDto(<% } %>query.getResultList()<% if (hasDto) { %>)<% } %>;
-        <%_ if(hasPagination) { _%>
         return new Paged<>(page.index, page.size, totalCount, (long) Math.ceil(((double) totalCount) / page.size), resultList);
-        <%_ } else { _%>
+    }
+
+    <%_ } _%>
+    /**
+     * Get all the <%= entityInstancePlural %>.
+     * @return the list of entities.
+     */
+    <%_ if (hasServiceImpl) { _%>
+    @Override
+    <%_ } _%>
+    <%_ if (databaseType === 'sql' && isUsingMapsId === true) { _%>
+    @Transactional(readOnly = true)
+    <%_ } _%>
+    public List<<%= entityOrDtoClass %>> findAllByCriteria(<%= entityClass %>Criteria <%= entityInstance %>Criteria, Sort sort) {
+        log.debug("Request to get all <%= entityClassPlural %>");
+        CriteriaQuery<<%= entityClass %>> criteriaQuery = createSelectCriteriaQuery(<%= entityInstance %>Criteria, sort);
+        final TypedQuery<<%= entityClass %>> query = entityManager.createQuery(criteriaQuery);
+        List<<%= entityOrDtoClass %>> resultList = <% if (hasDto) { %><%= mapper %>.toDto(<% } %>query.getResultList()<% if (hasDto) { %>)<% } %>;
         return resultList;
-        <%_ } _%>
     }

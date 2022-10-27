@@ -39,16 +39,15 @@ public class BatchExecutionService {
         List<BatchExecutionResponseDTO> responseDTOList = new ArrayList<>();
         for (BatchExecutionRequestDTO request : batchExecutionRequests) {
             BatchExecutionServiceExtension batchExecutionServiceExtension = servicesProvider.getServiceExtension(request.objectName);
-            BaseDTO data = (BaseDTO) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.DTO_CLASS_PATH, request.objectName + "DTO"));
             Object responseData = null;
             if (ActionType.CREATE.equals(request.actionType) || ActionType.UPDATE.equals(request.actionType)) {
-                responseData = batchExecutionServiceExtension.persistOrUpdate(data);
+                responseData = batchExecutionServiceExtension.persistOrUpdate(createBaseDTO(request));
             } else if (ActionType.PARTIAL_UPDATE.equals(request.actionType)) {
-                responseData = batchExecutionServiceExtension.partialUpdate(data);
+                responseData = batchExecutionServiceExtension.partialUpdate(createBaseDTO(request));
             } else if (ActionType.READ_OBJECT.equals(request.actionType)) {
-                responseData = batchExecutionServiceExtension.findOne(data.getId()).orElse(null);
+                responseData = batchExecutionServiceExtension.findOne(createBaseDTO(request).getId()).orElse(null);
             } else if (ActionType.DELETE.equals(request.actionType)) {
-                batchExecutionServiceExtension.delete(data.getId());
+                batchExecutionServiceExtension.delete(createBaseDTO(request).getId());
             } else if (ActionType.READ_ENUM.equals(request.actionType)) {
                 EnumDTO enumDTO = jsonb.fromJson(request.data, EnumDTO.class);
                 responseData = batchExecutionServiceExtension.readEnum(enumDTO);
@@ -59,6 +58,9 @@ public class BatchExecutionService {
                 PrimitiveListRequestDTO primitiveListRequestDTO = jsonb.fromJson(request.data, PrimitiveListRequestDTO.class);
                 batchExecutionServiceExtension.deletePrimitiveList(primitiveListRequestDTO);
                 responseData = createPrimitiveList(primitiveListRequestDTO, request.objectName, batchExecutionServiceExtension);
+            } else if (ActionType.CRITERIA_SEARCH.equals(request.actionType)) {
+                Criteria criteria = (Criteria) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.CRITERIA_CLASS_PATH, request.objectName + "Criteria"));
+                responseData = batchExecutionServiceExtension.searchByCriteria(criteria);
             } else if (ActionType.CRITERIA_DELETE.equals(request.actionType)) {
                 Criteria criteria = (Criteria) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.CRITERIA_CLASS_PATH, request.objectName + "Criteria"));
                 batchExecutionServiceExtension.deleteByCriteria(criteria);
@@ -67,6 +69,10 @@ public class BatchExecutionService {
             responseDTOList.add(response);
         }
         return responseDTOList;
+    }
+
+    private BaseDTO createBaseDTO(BatchExecutionRequestDTO request) {
+        return (BaseDTO) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.DTO_CLASS_PATH, request.objectName + "DTO"));
     }
 
     private List<Object> createPrimitiveList(PrimitiveListRequestDTO primitiveListRequestDTO, String objectName, BatchExecutionServiceExtension batchExecutionServiceExtension) {
