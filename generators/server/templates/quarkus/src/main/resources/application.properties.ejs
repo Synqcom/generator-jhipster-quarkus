@@ -18,6 +18,12 @@
 -%>
 application.name=<%= baseName %>
 
+<%_ if (applicationProperties) { _%>
+    <%_ Object.keys(applicationProperties).forEach(function(key) { _%>
+<%= key %>=<%= applicationProperties[key] %>
+    <%_ }); _%>
+<%_ } _%>
+
 <%_ if(databaseType !== 'no') { _%>
 <%- include('../../../partials/data_application.properties.ejs', { baseName: baseName, BUILD_DIR: BUILD_DIR, devDatabaseType:devDatabaseType, prodDatabaseType: prodDatabaseType}) -%>
 <%_ } _%>

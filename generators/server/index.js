@@ -28,6 +28,7 @@ module.exports = class extends ServerGenerator {
                 this.httpRootPath = configuration.get('httpRootPath');
                 this.jvmArguments = configuration.get('jvmArguments');
                 this.nativeArguments = configuration.get('nativeArguments');
+                this.applicationProperties = configuration.get('applicationProperties');
             },
         };
         const phaseFromQuarkus = {
