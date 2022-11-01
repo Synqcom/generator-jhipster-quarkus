@@ -66,5 +66,5 @@ public interface <%= entityClass %>QueryService extends BatchExecutionQueryServi
      * Delete the <%= entityInstancePlural %>.
      * @return the count of deleted entities.
      */
-    Integer deleteByCriteria(<%= entityClass %>Criteria <%= entityInstance %>Criteria);
+    Long deleteByCriteria(<%= entityClass %>Criteria <%= entityInstance %>Criteria);
 }

@@ -11,5 +11,5 @@ public interface BatchExecutionQueryServiceInterface<T, V> {
 
     List<T> findAllByCriteria(V criteria, Sort sort);
 
-    Integer deleteByCriteria(V criteria);
+    Long deleteByCriteria(V criteria);
 }
