@@ -26,7 +26,9 @@
     <%_ if (databaseType === 'sql') { _%>
     @Transactional
     <%_ } _%>
-    public Integer deleteByCriteria(<%= entityClass %>Criteria <%= entityInstance %>Criteria) {
+    public Long deleteByCriteria(<%= entityClass %>Criteria <%= entityInstance %>Criteria) {
         log.debug("Request to delete <%= entityClassPlural %>");
-        return entityManager.createQuery(createDeleteCriteriaQuery(<%= entityInstance %>Criteria)).executeUpdate();
+        return entityManager.createQuery(createSelectCriteriaQuery(<%= entityInstance %>Criteria, null)).getResultStream()
+            .peek(PanacheEntityBase::delete)
+            .count();
     }

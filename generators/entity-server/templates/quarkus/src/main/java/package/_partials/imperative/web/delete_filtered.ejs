@@ -28,7 +28,7 @@
     <%_ } _%>
     public Response deleteFiltered<%= entityClassPlural %>(<%= entityClass %>Criteria criteria) {
         log.debug("REST request to delete <%= entityClassPlural %> by criteria: {}", criteria);
-        Integer result = <%= entityInstance %>QueryService.deleteByCriteria(criteria);
+        Long result = <%= entityInstance %>QueryService.deleteByCriteria(criteria);
         var response = Response.ok().entity(result);
         return response.build();
     }

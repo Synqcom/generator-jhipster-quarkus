@@ -67,6 +67,14 @@ public class BatchExecutionServiceExtension<T> implements BatchExecutionServiceI
         return queryService.findAllByCriteria(criteria, null);
     }
 
+    public long deleteByIdCriteria(BaseCriteria criteria) {
+        if (criteria.getId() == null || criteria.getId().getIn() == null) {
+            return 0L;
+        }
+        criteria.getId().getIn().forEach(serviceInterface::delete);
+        return criteria.getId().getIn().size();
+    }
+
     public Map<String, Object> deleteByCriteria(Criteria criteria) {
         BatchExecutionQueryServiceInterface queryService = servicesProvider.getQueryService(objectName);
         return Collections.singletonMap("count", queryService.deleteByCriteria(criteria));

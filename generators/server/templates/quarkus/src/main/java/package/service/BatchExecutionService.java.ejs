@@ -12,7 +12,9 @@ import javax.inject.Inject;
 import javax.json.bind.Jsonb;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Сервис для пакетной модификации объектов
@@ -48,6 +50,7 @@ public class BatchExecutionService {
                 responseData = batchExecutionServiceExtension.findOne(createBaseDTO(request).getId()).orElse(null);
             } else if (ActionType.DELETE.equals(request.actionType)) {
                 batchExecutionServiceExtension.delete(createBaseDTO(request).getId());
+                responseData = Collections.singletonMap("id", createBaseDTO(request).getId());
             } else if (ActionType.READ_ENUM.equals(request.actionType)) {
                 EnumDTO enumDTO = jsonb.fromJson(request.data, EnumDTO.class);
                 responseData = batchExecutionServiceExtension.readEnum(enumDTO);
@@ -64,6 +67,15 @@ public class BatchExecutionService {
             } else if (ActionType.CRITERIA_DELETE.equals(request.actionType)) {
                 Criteria criteria = (Criteria) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.CRITERIA_CLASS_PATH, request.objectName + "Criteria"));
                 batchExecutionServiceExtension.deleteByCriteria(criteria);
+            } else if (ActionType.ID_CRITERIA_DELETE.equals(request.actionType)) {
+                BaseCriteria criteria = (BaseCriteria) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.CRITERIA_CLASS_PATH, request.objectName + "Criteria"));
+                long result = batchExecutionServiceExtension.deleteByIdCriteria(criteria);
+                if (result == 0) {
+                    responseData = new ArrayList<>();
+                } else {
+                    responseData = criteria.getId().getIn().stream()
+                        .map(id -> Collections.singletonMap("id", id)).collect(Collectors.toList());
+                }
             }
             BatchExecutionResponseDTO response = batchExecutionMapper.toBatchExecutionResponseDTO(request, responseData);
             responseDTOList.add(response);

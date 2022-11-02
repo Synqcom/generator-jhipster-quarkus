@@ -770,6 +770,10 @@ const serverFiles = {
                     renameTo: generator => `${generator.javaDir}service/dto/ActionType.java`,
                 },
                 {
+                    file: 'package/service/dto/BaseCriteria.java',
+                    renameTo: generator => `${generator.javaDir}service/dto/BaseCriteria.java`,
+                },
+                {
                     file: 'package/service/dto/EnumDTO.java',
                     renameTo: generator => `${generator.javaDir}service/dto/EnumDTO.java`,
                 },
