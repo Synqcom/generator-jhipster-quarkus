@@ -69,8 +69,8 @@ public class BatchExecutionService {
                 batchExecutionServiceExtension.deleteByCriteria(criteria);
             } else if (ActionType.ID_CRITERIA_DELETE.equals(request.actionType)) {
                 BaseCriteria criteria = (BaseCriteria) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.CRITERIA_CLASS_PATH, request.objectName + "Criteria"));
-                batchExecutionServiceExtension.deleteByIdCriteria(criteria);
-                if (criteria.getId() == null || criteria.getId().getIn() == null) {
+                long result = batchExecutionServiceExtension.deleteByIdCriteria(criteria);
+                if (result == 0) {
                     responseData = new ArrayList<>();
                 } else {
                     responseData = criteria.getId().getIn().stream()
