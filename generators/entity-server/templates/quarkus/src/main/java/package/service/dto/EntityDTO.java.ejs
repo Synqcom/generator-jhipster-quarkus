@@ -152,7 +152,7 @@ public class <%= asDto(entityClass) %> implements Serializable, BaseDTO {
     @ApiModelProperty(value = "<%- formatAsApiDescription(relationships[idx].javadoc) %>")
         <%_ } _%>
         <%_ if ((relationshipType === 'many-to-many' && ownerSide === true) || (relationshipType === 'one-to-many' && otherEntityIsEmbedded)) { _%>
-    public Set<<%= asDto(otherEntityNameCapitalized) %>> <%= relationshipFieldName %> = new HashSet<>();
+    public Set<<%= asDto(otherEntityNameCapitalized) %>> <%= relationshipFieldName %>;
         <%_ } else if (relationshipType === 'one-to-one' && ownerSide === true && otherEntityIsEmbedded) { _%>
     public <%= asDto(otherEntityNameCapitalized) %> <%= relationshipFieldName %>;
         <%_ } else if (relationshipType === 'many-to-one' || (relationshipType === 'one-to-one' && ownerSide === true)) { _%>
@@ -186,7 +186,27 @@ public class <%= asDto(entityClass) %> implements Serializable, BaseDTO {
 
     @Override
     public int hashCode() {
-        return 31;
+        return Objects.hash(id
+        <%_ for (idx in fields) {
+            const fieldName = fields[idx].fieldName; _%>
+            , <%= fieldName %>
+        <%_ } _%>
+        <%_ for (idx in relationships) {
+            const relationshipFieldName = relationships[idx].relationshipFieldName;
+            const relationshipType = relationships[idx].relationshipType;
+            const otherEntityFieldCapitalized = relationships[idx].otherEntityFieldCapitalized;
+            const otherEntityIsEmbedded = relationships[idx].otherEntityIsEmbedded;
+            const ownerSide = relationships[idx].ownerSide; _%>
+        <%_ if ((relationshipType === 'many-to-many' && ownerSide === true) || (relationshipType === 'one-to-many' && otherEntityIsEmbedded)) { _%>
+            , <%= relationshipFieldName %>
+        <%_ } else if (relationshipType === 'one-to-one' && ownerSide === true && otherEntityIsEmbedded) { _%>
+            , <%= relationshipFieldName %>
+        <%_ } else if (relationshipType === 'many-to-one' || (relationshipType === 'one-to-one' && ownerSide === true)) { _%>
+            , <%= relationshipFieldName %>Id
+            <%_ if (otherEntityFieldCapitalized !== 'Id' && otherEntityFieldCapitalized !== '') { _%>
+                , <%= relationshipFieldName %><%= otherEntityFieldCapitalized %>
+        <%_ } } } _%>
+        );
     }
 
     @Override
@@ -222,5 +242,22 @@ public class <%= asDto(entityClass) %> implements Serializable, BaseDTO {
             ", <%= relationshipFieldName %><%= otherEntityFieldCapitalized %>='" + <%= relationshipFieldName %><%= otherEntityFieldCapitalized %> + "'" +
             <%_ } } } _%>
             "}";
+    }
+
+    public <%= asDto(entityClass) %>() {
+        <%_ for (idx in relationships) {
+            const relationshipFieldName = relationships[idx].relationshipFieldName;
+            const relationshipType = relationships[idx].relationshipType;
+            const otherEntityIsEmbedded = relationships[idx].otherEntity.embedded;
+            const ownerSide = relationships[idx].ownerSide;
+        _%>
+            <%_ if ((relationshipType === 'many-to-many' && ownerSide === true) || (relationshipType === 'one-to-many' && otherEntityIsEmbedded)) { _%>
+                <%= relationshipFieldName %> = new HashSet<>();
+            <%_ } _%>
+        <%_ } _%>
+    }
+
+    public <%= asDto(entityClass) %>(Long id) {
+        this.id = id;
     }
 }
