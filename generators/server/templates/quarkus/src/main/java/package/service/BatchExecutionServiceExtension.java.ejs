@@ -111,6 +111,11 @@ public class BatchExecutionServiceExtension<T> implements BatchExecutionServiceI
     }
 
     @Override
+    public T persist(Object o) {
+        return serviceInterface.persist((T) o);
+    }
+
+    @Override
     public Optional<T> findOne(Long id) {
         return serviceInterface.findOne(id);
     }

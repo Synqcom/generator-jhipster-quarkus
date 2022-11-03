@@ -42,7 +42,9 @@ public class BatchExecutionService {
         for (BatchExecutionRequestDTO request : batchExecutionRequests) {
             BatchExecutionServiceExtension batchExecutionServiceExtension = servicesProvider.getServiceExtension(request.objectName);
             Object responseData = null;
-            if (ActionType.CREATE.equals(request.actionType) || ActionType.UPDATE.equals(request.actionType)) {
+            if (ActionType.CREATE.equals(request.actionType)) {
+                responseData = batchExecutionServiceExtension.persist(createBaseDTO(request));
+            } else if (ActionType.UPDATE.equals(request.actionType)) {
                 responseData = batchExecutionServiceExtension.persistOrUpdate(createBaseDTO(request));
             } else if (ActionType.PARTIAL_UPDATE.equals(request.actionType)) {
                 responseData = batchExecutionServiceExtension.partialUpdate(createBaseDTO(request));
