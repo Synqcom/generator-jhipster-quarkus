@@ -1,9 +1,6 @@
 package <%=packageName%>.provider;
 
-import <%=packageName%>.service.BatchExecutionServiceExtension;
-import <%=packageName%>.service.BatchExecutionQueryServiceInterface;
-import <%=packageName%>.service.BatchExecutionServiceInterface;
-import <%=packageName%>.service.CriteriaFactory;
+import <%=packageName%>.service.*;
 import <%=packageName%>.service.mapper.EntityMapper;
 import <%=packageName%>.service.util.ClassUtil;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,6 +28,9 @@ public class BatchExecutionServicesProvider {
     @Inject
     CriteriaFactory criteriaFactory;
 
+    @Inject
+    TranslationQueryService translationQueryService;
+
     private final ConcurrentHashMap<String, BatchExecutionServiceExtension> serviceExtensions = new ConcurrentHashMap<>();
 
     private final ConcurrentHashMap<String, BatchExecutionQueryServiceInterface> queryServices = new ConcurrentHashMap<>();
@@ -53,7 +53,8 @@ public class BatchExecutionServicesProvider {
         objectService,
         objectName,
         servicesProvider,
-        criteriaFactory
+        criteriaFactory,
+        translationQueryService
         );
         serviceExtensions.put(objectName, batchExecutionServiceExtension);
         return batchExecutionServiceExtension;

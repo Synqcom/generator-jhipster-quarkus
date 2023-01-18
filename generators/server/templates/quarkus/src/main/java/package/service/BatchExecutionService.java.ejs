@@ -11,6 +11,7 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.json.bind.Jsonb;
 import javax.transaction.Transactional;
+import io.quarkus.panache.common.Page;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -37,12 +38,14 @@ public class BatchExecutionService {
      * @return список модифицированных объектов
      */
     @Transactional
-    public List<BatchExecutionResponseDTO> batchExecution(List<BatchExecutionRequestDTO> batchExecutionRequests) {
+    public List<BatchExecutionResponseDTO> batchExecution(List<BatchExecutionRequestDTO> batchExecutionRequests, String locale) {
         List<BatchExecutionResponseDTO> responseDTOList = new ArrayList<>();
         for (BatchExecutionRequestDTO request : batchExecutionRequests) {
             BatchExecutionServiceExtension batchExecutionServiceExtension = servicesProvider.getServiceExtension(request.objectName);
             Object responseData = null;
-            if (ActionType.CREATE.equals(request.actionType)) {
+            if (ActionType.FIND_ALL.equals(request.actionType)) {
+                responseData = batchExecutionServiceExtension.findAll(Page.of(request.page, request.size)).content;
+            } else if (ActionType.CREATE.equals(request.actionType)) {
                 responseData = batchExecutionServiceExtension.persist(createBaseDTO(request));
             } else if (ActionType.UPDATE.equals(request.actionType)) {
                 responseData = batchExecutionServiceExtension.persistOrUpdate(createBaseDTO(request));
@@ -56,6 +59,10 @@ public class BatchExecutionService {
             } else if (ActionType.READ_ENUM.equals(request.actionType)) {
                 EnumDTO enumDTO = jsonb.fromJson(request.data, EnumDTO.class);
                 responseData = batchExecutionServiceExtension.readEnum(enumDTO);
+            } else if (ActionType.READ_ENUM_BY_ID.equals(request.actionType)) {
+                EnumCriteria criteria = (EnumCriteria) jsonb.fromJson(request.data,
+                    ClassUtil.getClass(ClassUtil.CRITERIA_CLASS_PATH, request.objectName + "Criteria"));
+                responseData = batchExecutionServiceExtension.readEnum(criteria, locale).content;
             } else if (ActionType.CREATE_PRIMITIVE_LIST.equals(request.actionType)) {
                 PrimitiveListRequestDTO primitiveListRequestDTO = jsonb.fromJson(request.data, PrimitiveListRequestDTO.class);
                 responseData = createPrimitiveList(primitiveListRequestDTO, request.objectName, batchExecutionServiceExtension);
@@ -63,7 +70,7 @@ public class BatchExecutionService {
                 PrimitiveListRequestDTO primitiveListRequestDTO = jsonb.fromJson(request.data, PrimitiveListRequestDTO.class);
                 batchExecutionServiceExtension.deletePrimitiveList(primitiveListRequestDTO);
                 responseData = createPrimitiveList(primitiveListRequestDTO, request.objectName, batchExecutionServiceExtension);
-            } else if (ActionType.CRITERIA_SEARCH.equals(request.actionType)) {
+            } else if (ActionType.CRITERIA_SEARCH.equals(request.actionType) || ActionType.READ_PRIMITIVE_LIST.equals(request.actionType)) {
                 Criteria criteria = (Criteria) jsonb.fromJson(request.data, ClassUtil.getClass(ClassUtil.CRITERIA_CLASS_PATH, request.objectName + "Criteria"));
                 responseData = batchExecutionServiceExtension.searchByCriteria(criteria);
             } else if (ActionType.CRITERIA_DELETE.equals(request.actionType)) {

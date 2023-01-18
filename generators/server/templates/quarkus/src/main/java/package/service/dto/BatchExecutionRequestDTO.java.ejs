@@ -29,4 +29,14 @@ public class BatchExecutionRequestDTO implements Serializable {
      * Строка json, содержащая данные для модификации
      */
     public String data;
+
+    /**
+     * Запрашиваемая страница при запросах чтения
+     */
+    public Integer page = 0;
+
+    /**
+     * Запрашиваемый размер страницы при запросах чтения
+     */
+    public Integer size = 50;
 }

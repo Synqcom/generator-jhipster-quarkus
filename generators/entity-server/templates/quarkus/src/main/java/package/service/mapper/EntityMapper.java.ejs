@@ -50,6 +50,7 @@ if (primitiveTypeName === 'Blob' || primitiveTypeName === 'AnyBlob' || primitive
 } else if (primitiveTypeName === 'TextBlob') {
     primitiveType = 'String';
 }
+const enumObject = fields.find(function(e) { return e.fieldName === 'code'}) !== undefined && relationships.find(function(e) { return e.relationshipType === 'one-to-one' && e.relationshipFieldName === 'label'}) !== undefined;
 _%>
 
 import <%= packageName %>.domain.*;
@@ -113,6 +114,9 @@ _%>
         <%_ } _%>
     <%_ } _%>
     <%_ if (renMapAnotEnt === true) { _%>
+        <%_ if (enumObject) { _%>
+    @Mapping(target = "label", ignore = true)
+        <%_ } _%>
     <%= asDto(entityClass) %> toDto(<%= asEntity(entityClass) %> <%= asEntity(entityInstance) %>);
     <%_ } _%>
 

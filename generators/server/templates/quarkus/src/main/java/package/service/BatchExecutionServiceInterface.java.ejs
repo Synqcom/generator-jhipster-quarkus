@@ -1,8 +1,12 @@
 package <%=packageName%>.service;
 
+import io.quarkus.panache.common.Page;
+
 import java.util.Optional;
 
 public interface BatchExecutionServiceInterface<T> {
+
+    Paged<T> findAll(Page page);
 
     T persistOrUpdate(T t);
 

@@ -24,6 +24,7 @@ let importJsonIgnore = false;
 let importJsonIgnoreProperties = false;
 let importSet = false;
 const uniqueEnums = {};
+const enumObject = fields.find(function(e) { return e.fieldName === 'code'}) !== undefined && relationships.find(function(e) { return e.relationshipType === 'one-to-one' && e.relationshipFieldName === 'label'}) !== undefined;
 _%>
 <%_ include('../../domain/imports', {
     fields: fields,
@@ -88,7 +89,7 @@ import <%=packageName%>.domain.enumeration.<%= element %>;
 @ApiModel(description = "<%- formatAsApiDescription(javadoc) %>")
 <%_ } _%>
 @RegisterForReflection
-public class <%= asDto(entityClass) %> implements Serializable, BaseDTO {
+public class <%= asDto(entityClass) %> <% if (enumObject) { %>extends EnumDTO <% } %>implements Serializable, BaseDTO {
     <% if (!embedded) { %>
     public <%= primaryKeyType %> id;
     <%_ } _%>

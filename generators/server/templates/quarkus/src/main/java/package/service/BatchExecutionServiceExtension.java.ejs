@@ -3,6 +3,7 @@ package <%=packageName%>.service;
 import <%=packageName%>.provider.BatchExecutionServicesProvider;
 import <%=packageName%>.service.dto.*;
 import <%=packageName%>.service.filtering.Criteria;
+import <%=packageName%>.service.filtering.filter.LongFilter;
 import <%=packageName%>.service.filtering.filter.StringFilter;
 import <%=packageName%>.service.mapper.EntityMapper;
 import <%=packageName%>.service.exception.BatchExecutionException;
@@ -26,12 +27,20 @@ public class BatchExecutionServiceExtension<T> implements BatchExecutionServiceI
 
     CriteriaFactory criteriaFactory;
 
+    TranslationQueryService translationQueryService;
+
     public BatchExecutionServiceExtension(BatchExecutionServiceInterface<T> serviceInterface, String objectName,
-        BatchExecutionServicesProvider servicesProvider, CriteriaFactory criteriaFactory) {
+        BatchExecutionServicesProvider servicesProvider, CriteriaFactory criteriaFactory,
+        TranslationQueryService translationQueryService) {
         this.serviceInterface = serviceInterface;
         this.objectName = objectName;
         this.servicesProvider = servicesProvider;
         this.criteriaFactory = criteriaFactory;
+        this.translationQueryService = translationQueryService;
+    }
+
+    public Paged<T> findAll(Page page) {
+        return serviceInterface.findAll(page);
     }
 
     public T partialUpdate(BaseDTO entityDTO) {
@@ -48,17 +57,22 @@ public class BatchExecutionServiceExtension<T> implements BatchExecutionServiceI
     }
 
     public T readEnum(EnumDTO enumDTO) {
+        EnumCriteria enumCriteria = (EnumCriteria) criteriaFactory.createCriteria(objectName);
+        StringFilter codeFilter = new StringFilter();
+        codeFilter.setEquals(enumDTO.code);
+        enumCriteria.setCode(codeFilter);
+        return readEnum(enumCriteria, null).content.stream()
+            .findFirst().orElse(null);
+    }
+
+    public Paged<T> readEnum(EnumCriteria enumCriteria, String locale) {
         try {
             BatchExecutionQueryServiceInterface objectQueryService = servicesProvider.getQueryService(objectName);
-            EnumCriteria enumCriteria = (EnumCriteria) criteriaFactory.createCriteria(objectName);
-
-            StringFilter codeFilter = new StringFilter();
-            codeFilter.setEquals(enumDTO.code);
-            enumCriteria.setCode(codeFilter);
-            return (T) objectQueryService.findAllByCriteria(enumCriteria, Page.of(0, 50), Sort.by("code"))
-                .content.stream().findFirst().orElse(null);
+            return objectQueryService
+                .findAllByCriteria(enumCriteria, Page.of(0, 50), Sort.by("code"))
+                .map(enumDTO -> translateEnum((EnumDTO) enumDTO, locale));
         } catch (NoSuchElementException e) {
-            throw new BatchExecutionException(String.format("Enum with name %s and code %s not found", objectName, enumDTO.code));
+            throw new BatchExecutionException(String.format("Enum with name %s is not found by criteria %s", objectName, enumCriteria));
         }
     }
 
@@ -123,5 +137,23 @@ public class BatchExecutionServiceExtension<T> implements BatchExecutionServiceI
     @Override
     public void delete(Long id) {
         serviceInterface.delete(id);
+    }
+
+    private EnumDTO translateEnum(EnumDTO enumDTO, String locale) {
+        if (enumDTO == null || locale == null) {
+            return enumDTO;
+        }
+        TranslationCriteria translationCriteria = new TranslationCriteria();
+        LongFilter localizedStringIdFilter = new LongFilter();
+        localizedStringIdFilter.setEquals(enumDTO.labelId);
+        translationCriteria.setLocalizedStringId(localizedStringIdFilter);
+        StringFilter localeFilter = new StringFilter();
+        localeFilter.setEquals(locale);
+        translationCriteria.setLocale(localeFilter);
+        enumDTO.label = translationQueryService.findAllByCriteria(translationCriteria, null).stream()
+            .findFirst()
+            .map(translationDTO -> translationDTO.label)
+            .orElse(String.format("%s[%s]", enumDTO.code, locale));
+        return enumDTO;
     }
 }
